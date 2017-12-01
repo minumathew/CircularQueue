@@ -1,0 +1,52 @@
+
+     AREA     appcode, CODE, READONLY
+     EXPORT __main
+	 ENTRY 
+
+
+__main  FUNCTION		 
+        MOV R2,#0x20000000;initial  address  of circular queue
+		MOV R3,#0x01;initial  data
+	    	MOV R7,#0x09;enqueue count R7 since inserting 10 elements
+		MOV R8,#0x04;dequeue count  R8 since deleting 5 elements 
+		MOV R4,#0x28;queue size is for 10 elements so 40 bytes
+		MOV R6,#0x20000000;front pointer;initially both are same so empty
+		MOV R5,#0x20000000;rear pointer
+		MOV R9,#0x04;since there is space in front ;  count
+				
+		
+insert_ten;insert 10 elements
+		CMP R7,#0;loop till no of elements equals size
+		STR R3,[R5];store contents of r3 into address pointed by rear pointer
+		ADD R5,#0x04;increment rear address
+		ADD R3,#0x01;increment data address
+		SUBGT R7,R7,#1
+		BGT insert_ten
+		
+delete_five;delete 5 elements
+		CMP R8,#0;loop till 5 elements are deleted
+		ADD R6,#0x04;increment front
+		SUBGT R8,R8,#1
+		BGT delete_five
+		
+	
+		
+insert2_five;wraparound 
+		CMP R9,#0;
+		STR R3,[R5];
+		ADD R5,#0x04;
+		ADD R3,#0x01;
+		SUBGT R9,R9,#1
+		BGT insert2_five
+		MOV R8,#0x04
+
+		MOV R6,R2;rear to  base address
+delete_queue;delete until  empty
+		SUB R8,R5,R6
+		CMP R8,#0
+		ADD R6,#0x04;
+		BGT delete_queue
+		
+stop B stop ; stop program
+     ENDFUNC
+     END
