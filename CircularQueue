@@ -7,45 +7,49 @@
 __main  FUNCTION		 
         MOV R2,#0x20000000;initial  address  of circular queue
 		MOV R3,#0x01;initial  data
-	    	MOV R7,#0x09;enqueue count R7 since inserting 10 elements
+		MOV R7,#0x09;enqueue count R7 since inserting 10 elements
 		MOV R8,#0x04;dequeue count  R8 since deleting 5 elements 
 		MOV R4,#0x28;queue size is for 10 elements so 40 bytes
 		MOV R6,#0x20000000;front pointer;initially both are same so empty
 		MOV R5,#0x20000000;rear pointer
-		MOV R9,#0x04;since there is space in front ;  count
-				
+		MOV R9,#0x04;wraparound  count
 		
-insert_ten;insert 10 elements
+
+		
+		
+insertten;insert 10 elements
 		CMP R7,#0;loop till no of elements equals size
 		STR R3,[R5];store contents of r3 into address pointed by rear pointer
 		ADD R5,#0x04;increment rear address
 		ADD R3,#0x01;increment data address
 		SUBGT R7,R7,#1
-		BGT insert_ten
+		BGT insertten
 		
-delete_five;delete 5 elements
+deletefive;delete 5 elements
 		CMP R8,#0;loop till 5 elements are deleted
 		ADD R6,#0x04;increment front
 		SUBGT R8,R8,#1
-		BGT delete_five
+		BGT deletefive
 		
-	
+		MOV R5,R2;reset rear pointer to the base address
 		
-insert2_five;wraparound 
+insertwrap_five;wraparound 
 		CMP R9,#0;
-		STR R3,[R5];
-		ADD R5,#0x04;
-		ADD R3,#0x01;
+		STR R3,[R5];store contents of r3 into address pointed by rear pointer
+		ADD R5,#0x04;increment rear
+		ADD R3,#0x01;increment data
 		SUBGT R9,R9,#1
-		BGT insert2_five
-		MOV R8,#0x04
+		BGT insertwrap_five
+		
+		
 
-		MOV R6,R2;rear to  base address
-delete_queue;delete until  empty
-		SUB R8,R5,R6
+		MOV R5,R4;reset rear to the base address
+		MOV R6,R2;reset rear to the base address
+deletequeue;delete till queue is empty
+		SUB R8,R6,R5
 		CMP R8,#0
-		ADD R6,#0x04;
-		BGT delete_queue
+		ADD R6,#0x04;increment front
+		BGT deletequeue
 		
 stop B stop ; stop program
      ENDFUNC
